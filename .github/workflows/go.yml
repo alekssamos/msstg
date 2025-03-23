@@ -1,0 +1,40 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24.1'
+
+    - name: Install pre-commit
+      run: pipx Install pre-commit
+
+    - name: Build
+      run: go build -v
+
+    - name: Test
+      run: |-
+        go test -v ./... &&
+        pre-commit run --all-files
+        go build -ldflags="-s -w" -o ./msstg
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4.6.2
+      with:
+        name: msstg
+        path: ./msstg
+        if-no-files-found: error
+        retention-days: 2
+        compression-level: 8
+        overwrite: true

@@ -1,0 +1,10 @@
+*.exe
+*.cmd
+*.bat
+*.mp3
+*.ogg
+*.txt
+.env
+*.db*
+*.sqlite*
+*load*
