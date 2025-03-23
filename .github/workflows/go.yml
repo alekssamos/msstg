@@ -32,6 +32,8 @@ jobs:
       run: go build -v
 
     - name: Test
+      env:
+        SKIP: no-commit-to-branch
       run: |-
         go test -v ./... &&
         pre-commit run --all-files
