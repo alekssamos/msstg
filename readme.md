@@ -16,5 +16,6 @@ Compiled builds are available on the releases page.
 ## How build?
 
 ```bash
+go mod tidy
 go build .
 ```
