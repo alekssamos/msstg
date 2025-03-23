@@ -1,5 +1,4 @@
-name: Go
-
+name: Go checker
 on:
   push:
     branches: [ "main" ]
@@ -18,13 +17,16 @@ jobs:
       with:
         go-version: '1.24.1'
 
-    - name: Install pre-commit and linters
+    - name: Set up Linter
       uses: golangci/golangci-lint-action@v6
       with:
         version: v1.64
-      run: |
-        pipx install pre-commit
-        go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+
+    - name: Install go-critic
+      run: go install -v github.com/go-critic/go-critic/cmd/gocritic@latest
+
+    - name: Install pre-commit
+      run: pipx install pre-commit
 
     - name: Build
       run: go build -v
