@@ -28,6 +28,16 @@ jobs:
     - name: Install pre-commit
       run: pipx install pre-commit
 
+    - name: Lint
+      continue-on-error: true
+      run: |-
+        gofmt -s -w .
+        pre-commit run --all-files
+
+    - name: Push linter changes
+      continue-on-error: true
+      run: git commit -a -m "linter changes" && git push
+
     - name: Build
       run: go build -v
 
@@ -38,9 +48,7 @@ jobs:
         go test -v ./... &&
         pre-commit run --all-files
         go build -ldflags="-s -w" -o ./msstg
-    - name: Push linter changes
-      continue-on-error: true
-      run: git commit -a -m "linter changes" && git push
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.6.2
       with:
