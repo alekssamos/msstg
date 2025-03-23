@@ -5,6 +5,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+    contents: write
+    pull-requests: write
+    checks: write
+
 jobs:
 
   build:
@@ -36,7 +41,10 @@ jobs:
 
     - name: Push linter changes
       continue-on-error: true
-      run: git commit -a -m "linter changes" && git push
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git commit -a -m "linter changes" && git push
 
     - name: Build
       run: go build -v
