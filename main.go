@@ -43,8 +43,14 @@ func main() {
 	opts := []bot.Option{
 		bot.WithDefaultHandler(handler),
 		bot.WithCallbackQueryDataHandler("selectvoice", bot.MatchTypePrefix, selectVoiceCallbackHandler),
+		bot.WithCallbackQueryDataHandler("selectrate", bot.MatchTypePrefix, selectRateCallbackHandler),
+		bot.WithCallbackQueryDataHandler("selectpitch", bot.MatchTypePrefix, selectPitchCallbackHandler),
 		bot.WithCallbackQueryDataHandler("voice_", bot.MatchTypePrefix, selectedVoiceCallbackHandler),
+		bot.WithCallbackQueryDataHandler("rate:", bot.MatchTypePrefix, selectedRatePitchCallbackHandler),
+		bot.WithCallbackQueryDataHandler("pitch:", bot.MatchTypePrefix, selectedRatePitchCallbackHandler),
+		bot.WithCallbackQueryDataHandler("currentvalue", bot.MatchTypePrefix, dummyCallbackHandler),
 		bot.WithCallbackQueryDataHandler("btn_cancel", bot.MatchTypePrefix, cancelCallbackHandler),
+		bot.WithCallbackQueryDataHandler("btn_ok", bot.MatchTypePrefix, okCallbackHandler),
 		bot.WithMiddlewares(dbUser),
 	}
 

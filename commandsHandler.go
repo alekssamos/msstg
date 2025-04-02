@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/go-telegram/bot"
@@ -23,17 +24,20 @@ func commandStartHandler(ctx context.Context, b *bot.Bot, update *models.Update)
 
 func firstHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	text := `
-	Ты здесь впервые, да? Ща всё настроим...
+	Не забудьте выбрать нужный голос.
 	`
+	kb := BuildSettingsKeyboard(ctx)
 	_, err := b.SendChatAction(ctx, &bot.SendChatActionParams{ChatID: update.Message.Chat.ID, Action: models.ChatActionTyping})
 	LogError(err)
-	p := &bot.SendMessageParams{ChatID: update.Message.Chat.ID, Text: text}
+	p := &bot.SendMessageParams{ChatID: update.Message.Chat.ID, Text: text, ReplyMarkup: kb}
 	_, err = b.SendMessage(ctx, p)
 	LogError(err)
 }
 
+const UseButtons = "Используйте кнопки"
+
 func commandSettingsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	text := "Используйте кнопки"
+	text := UseButtons
 	kb := BuildSettingsKeyboard(ctx)
 	p := &bot.SendMessageParams{ChatID: update.Message.Chat.ID, Text: text, ReplyMarkup: kb}
 	_, err := b.SendMessage(ctx, p)
@@ -122,6 +126,101 @@ func selectVoiceCallbackHandler(ctx context.Context, b *bot.Bot, update *models.
 		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
 		MessageID:   update.CallbackQuery.Message.Message.ID,
 		ReplyMarkup: kb,
+	})
+	LogError(err)
+}
+
+func selectRateCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
+	})
+	LogError(err)
+	kb := BuildAdjustmentKeyboard(ctx, KeyboardRate)
+	_, err = b.EditMessageText(ctx, &bot.EditMessageTextParams{
+		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
+		MessageID:   update.CallbackQuery.Message.Message.ID,
+		Text:        "Выбор скорости речи",
+		ReplyMarkup: kb,
+	})
+	LogError(err)
+}
+
+func selectPitchCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
+	})
+	LogError(err)
+	kb := BuildAdjustmentKeyboard(ctx, KeyboardPitch)
+	_, err = b.EditMessageText(ctx, &bot.EditMessageTextParams{
+		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
+		MessageID:   update.CallbackQuery.Message.Message.ID,
+		Text:        "Выбор высоты голоса",
+		ReplyMarkup: kb,
+	})
+	LogError(err)
+}
+
+func selectedRatePitchCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
+	})
+	LogError(err)
+	values := strings.Split(update.CallbackQuery.Data, ":")
+	if len(values) != 2 {
+		log.Printf("no rate or pitch in update data %q\n", update.CallbackQuery.Data)
+		return
+	}
+	v, err := strconv.Atoi(values[1])
+	LogError(err)
+	u := USER(ctx)
+	var field string
+	var sum int
+	var kbt adjustmentType
+	switch values[0] {
+	case "rate":
+		field = "VoiceRate"
+		sum = u.VoiceRate + v
+		kbt = KeyboardRate
+	case "pitch":
+		field = "VoicePitch"
+		sum = u.VoicePitch + v
+		kbt = KeyboardPitch
+	default:
+		panic("unknown handler type")
+	}
+	DB(ctx).Model(&u).Debug().Update(field, sum)
+	kb := BuildAdjustmentKeyboard(ctx, kbt)
+	_, err = b.EditMessageReplyMarkup(ctx, &bot.EditMessageReplyMarkupParams{
+		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
+		MessageID:   update.CallbackQuery.Message.Message.ID,
+		ReplyMarkup: kb,
+	})
+	LogError(err)
+}
+
+func okCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
+	})
+	LogError(err)
+	kb := BuildSettingsKeyboard(ctx)
+	_, err = b.EditMessageText(ctx, &bot.EditMessageTextParams{
+		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
+		MessageID:   update.CallbackQuery.Message.Message.ID,
+		Text:        UseButtons,
+		ReplyMarkup: kb,
+	})
+	LogError(err)
+}
+
+func dummyCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+		CallbackQueryID: update.CallbackQuery.ID,
+		ShowAlert:       false,
 	})
 	LogError(err)
 }

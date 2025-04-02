@@ -17,6 +17,7 @@ type User struct {
 	VoiceName  string    `gorm:"size:64;default:ru-RU-SvetlanaNeural"`
 	VoiceRate  int       `gorm:"default:0"`
 	VoicePitch int       `gorm:"default:0"`
+	State      string    `gorm:"size:64;default:"`
 	Books      []Book    `gorm:"foreignKey:UserID"`
 }
 

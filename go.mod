@@ -18,7 +18,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	modernc.org/libc v1.22.5 // indirect
