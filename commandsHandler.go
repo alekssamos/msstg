@@ -163,11 +163,16 @@ func selectPitchCallbackHandler(ctx context.Context, b *bot.Bot, update *models.
 }
 
 func selectedRatePitchCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
-		CallbackQueryID: update.CallbackQuery.ID,
-		ShowAlert:       false,
-	})
-	LogError(err)
+	showText := ""
+	showAlert := false
+	defer (func() {
+		_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+			CallbackQueryID: update.CallbackQuery.ID,
+			Text:            showText,
+			ShowAlert:       showAlert,
+		})
+		LogError(err)
+	})()
 	values := strings.Split(update.CallbackQuery.Data, ":")
 	if len(values) != 2 {
 		log.Printf("no rate or pitch in update data %q\n", update.CallbackQuery.Data)
@@ -190,6 +195,11 @@ func selectedRatePitchCallbackHandler(ctx context.Context, b *bot.Bot, update *m
 		kbt = KeyboardPitch
 	default:
 		panic("unknown handler type")
+	}
+	if sum > 100 || sum < -100 {
+		showAlert = true
+		showText = "Значение может быть в диапазоне от  -100 до +100"
+		return
 	}
 	DB(ctx).Model(&u).Debug().Update(field, sum)
 	kb := BuildAdjustmentKeyboard(ctx, kbt)
