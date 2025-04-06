@@ -23,7 +23,7 @@ func ConvEdgeTtsVal(v int, suffix string) (string, error) {
 	}
 	sign := "+"
 	if v < 0 {
-		sign = "-"
+		sign = ""
 	}
 	if v > 100 || v < -100 {
 		return "", fmt.Errorf("the value should be between -100 and +100")
