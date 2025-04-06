@@ -43,11 +43,11 @@ func BuildSettingsKeyboard(ctx context.Context) *models.InlineKeyboardMarkup {
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
-				{Text: fmt.Sprintf("Выбрать голос \t %s", vn), CallbackData: "selectvoice"},
+				{Text: fmt.Sprintf("Выбрать голос \t 🗣 %s", vn), CallbackData: "selectvoice"},
 			}, {
-				{Text: fmt.Sprintf("Изменить скорость речи \t %d", u.VoiceRate), CallbackData: "selectrate"},
+				{Text: fmt.Sprintf("Изменить скорость речи \t 🎯 %d", u.VoiceRate), CallbackData: "selectrate"},
 			}, {
-				{Text: fmt.Sprintf("Изменить высоту голоса \t %d", u.VoicePitch), CallbackData: "selectpitch"},
+				{Text: fmt.Sprintf("Изменить высоту голоса \t 🎯 %d", u.VoicePitch), CallbackData: "selectpitch"},
 			},
 			CallbackCancelButton,
 		},
@@ -78,9 +78,9 @@ func BuildAdjustmentKeyboard(ctx context.Context, what adjustmentType) *models.I
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
-				{Text: "-10", CallbackData: fmt.Sprintf("%s:-10", btn)},
-				{Text: fmt.Sprintf("%d", v), CallbackData: "currentvalue"},
-				{Text: "+10", CallbackData: fmt.Sprintf("%s:+10", btn)},
+				{Text: "➖ -10", CallbackData: fmt.Sprintf("%s:-10", btn)},
+				{Text: fmt.Sprintf("🎯 %d", v), CallbackData: "currentvalue"},
+				{Text: "➕ +10", CallbackData: fmt.Sprintf("%s:+10", btn)},
 			},
 			CallbackOKButton,
 		},
