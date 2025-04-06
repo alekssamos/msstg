@@ -3,7 +3,7 @@ module github.com/alekssamos/msstg
 go 1.24.1
 
 require (
-	github.com/alekssamos/edge-tts-go v1.0.5
+	github.com/alekssamos/edge-tts-go v1.0.6
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-telegram/bot v1.14.0
 	gorm.io/gorm v1.25.12
