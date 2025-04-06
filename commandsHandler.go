@@ -201,7 +201,7 @@ func selectedRatePitchCallbackHandler(ctx context.Context, b *bot.Bot, update *m
 		showText = "Значение может быть в диапазоне от  -100 до +100"
 		return
 	}
-	DB(ctx).Model(&u).Debug().Update(field, sum)
+	DB(ctx).Model(&u).Update(field, sum)
 	kb := BuildAdjustmentKeyboard(ctx, kbt)
 	_, err = b.EditMessageReplyMarkup(ctx, &bot.EditMessageReplyMarkupParams{
 		ChatID:      update.CallbackQuery.Message.Message.Chat.ID,
