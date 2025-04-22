@@ -86,6 +86,64 @@ func selectedVoiceCallbackHandler(ctx context.Context, b *bot.Bot, update *model
 	LogError(err)
 }
 
+func commandFindVoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	// Команда /findvoice <имя_голоса>
+	// Ищем голос по имени через findvoice
+	text := "Укажите имя голоса"
+	command := strings.SplitN(update.Message.Text, " ", 2)
+	if len(command) != 2 {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   text,
+		})
+		LogError(err)
+		return
+	}
+	voiceName := strings.TrimSpace(command[1])
+	voiceName = strings.ReplaceAll(voiceName, " ", "_") // github copilot suggested this
+	// ищем голос
+	voices, err := FindVoices(voiceName)
+	if err != nil {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Голос не найден",
+		})
+		LogError(err)
+		return
+	}
+	// Если найдено несколько, то выводим но всё равно выбираем первый
+	if len(voices) > 1 {
+		text = "Найдено несколько голосов:\n"
+		for _, v := range voices {
+			text += fmt.Sprintf("%s (%s)\n", v.FriendlyName, v.ShortName)
+		}
+	} else if len(voices) == 1 {
+		text = fmt.Sprintf("Найден голос: %s (%s)\n", voices[0].FriendlyName, voices[0].ShortName)
+	} else {
+		text = "Голос не найден"
+	}
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   text,
+	})
+	LogError(err)
+	// Выбираем первый голос
+	voice, ok := voices[0], len(voices) > 0
+	if !ok {
+		return
+	}
+	// Сохраняем голос в БД
+	u := USER(ctx)
+	DB(ctx).Model(&u).Update("VoiceName", voice.ShortName)
+	// Отправляем сообщение об успешном изменении голоса
+	text = fmt.Sprintf("Голос успешно изменён: %s", voice.FriendlyName)
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   text,
+	})
+	LogError(err)
+}
+
 func selectVoiceCallbackHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
 		CallbackQueryID: update.CallbackQuery.ID,

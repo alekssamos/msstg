@@ -73,12 +73,12 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	text := update.Message.Text
 	isCommand := true
 	switch {
-	case strings.HasPrefix(text, "/start"):
-		commandStartHandler(ctx, b, update)
-	case strings.HasPrefix(text, "/help"):
+	case isOneOf(text, "/start", "/help", "/помощь"):
 		commandStartHandler(ctx, b, update)
 	case strings.HasPrefix(text, "/settings"):
 		commandSettingsHandler(ctx, b, update)
+	case isOneOf(text, "/selectvoice", "/voice", "/выбратьголос", "/голос"):
+		commandFindVoiceHandler(ctx, b, update)
 	default:
 		isCommand = false
 		if len(text) > 0 {
