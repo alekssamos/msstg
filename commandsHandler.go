@@ -113,15 +113,16 @@ func commandFindVoiceHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 		return
 	}
 	// Если найдено несколько, то выводим но всё равно выбираем первый
-	if len(voices) > 1 {
+	switch len(voices) {
+	case 0:
+		text = "Голос не найден"
+	case 1:
+		text = fmt.Sprintf("Найден голос: %s (%s)\n", voices[0].FriendlyName, voices[0].ShortName)
+	default:
 		text = "Найдено несколько голосов:\n"
 		for _, v := range voices {
 			text += fmt.Sprintf("%s (%s)\n", v.FriendlyName, v.ShortName)
 		}
-	} else if len(voices) == 1 {
-		text = fmt.Sprintf("Найден голос: %s (%s)\n", voices[0].FriendlyName, voices[0].ShortName)
-	} else {
-		text = "Голос не найден"
 	}
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
