@@ -26,6 +26,7 @@ func firstHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	text := `
 	Не забудьте выбрать нужный голос.
 	`
+	fmt.Println("ctx:", ctx)
 	kb := BuildSettingsKeyboard(ctx)
 	_, err := b.SendChatAction(ctx, &bot.SendChatActionParams{ChatID: update.Message.Chat.ID, Action: models.ChatActionTyping})
 	LogError(err)
@@ -100,7 +101,7 @@ func commandFindVoiceHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 		return
 	}
 	voiceName := strings.TrimSpace(command[1])
-	voiceName = strings.ReplaceAll(voiceName, " ", "_") // github copilot suggested this
+	voiceName = voiceTranslit(voiceName)
 	// ищем голос
 	voices, err := FindVoices(voiceName)
 	if err != nil {
