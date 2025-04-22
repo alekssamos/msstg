@@ -109,6 +109,7 @@ func USER(ctx context.Context) *User {
 	case *User:
 		return x
 	default:
+		fmt.Println("unknown var user type in ctx", x)
 		panic("unknown var user type in ctx")
 	}
 }

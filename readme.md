@@ -10,7 +10,7 @@ msstg is a Telegram bot for converting text to speech. It is completely free wit
 - [x] Voice synthesis for short messages
 - [ ] Conversion from mp3 to ogg
 - [x] Voice selection via buttons
-- [ ] Voice selection via commands
+- [x] Voice selection via commands
 - [x] Voice pitch selection via buttons
 - [ ] Voice pitch selection via commands
 - [x] Voice rate selection via buttons
