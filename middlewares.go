@@ -21,26 +21,30 @@ func dbUser(next bot.HandlerFunc) bot.HandlerFunc {
 		if update.Message != nil {
 			ChatID = update.Message.Chat.ID
 		}
+		var call_first_handler bool
 		result := db.First(&user, ChatID)
 		if result.Error != nil {
 			if result.Error == gorm.ErrRecordNotFound {
 				fmt.Println("Пользователь в базе не найден, сейчас создадим")
-				if update.Message != nil {
-					firstHandler(ctx, b, update)
-				}
 				user = User{ChatID: ChatID}
 				result = db.Create(&user)
 				if result.Error != nil {
 					fmt.Println("Ошибка создания записи:", result.Error)
 					return
 				}
+				if update.Message != nil {
+					call_first_handler = true
+				}
 			} else {
 				fmt.Println("Ошибка поиска записи:", result.Error)
 			}
-			return
 		}
 		// fmt.Printf("Найден пользователь: %+v\n", user)
 		vctx = context.WithValue(ctx, ctxUserKey{}, &user)
+		if call_first_handler {
+			firstHandler(vctx, b, update)
+			return
+		}
 		next(vctx, b, update)
 	}
 }
