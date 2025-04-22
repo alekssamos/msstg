@@ -12,6 +12,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +20,11 @@ var mu sync.Mutex
 
 type ctxDbKey struct{}
 type ctxUserKey struct{}
+
+func init() {
+	err := godotenv.Load()
+	Must(err)
+}
 
 func main() {
 	// context
