@@ -57,14 +57,15 @@ func isOneOf(s string, args ...string) bool {
 func voiceTranslit(s string) string {
 	// transliterates cyrillic voice names to latin
 	s = strings.ToLower(s)
-	// дима / димон / дим / дмитрий to dmitry
-	s = strings.ReplaceAll(s, "дима", "dmitry")
-	s = strings.ReplaceAll(s, "димон", "dmitry")
-	s = strings.ReplaceAll(s, "дим", "dmitry")
-	s = strings.ReplaceAll(s, "дмитрий", "dmitry")
-	// света / светлана to svetlana
-	s = strings.ReplaceAll(s, "света", "svetlana")
-	s = strings.ReplaceAll(s, "светлана", "svetlana")
+	namesAliases := map[string][]string{
+		"dmitry":   {"дмитрий", "дима", "дим", "димон", "диман", "диманыч"},
+		"svetlana": {"света", "светка", "светлана"},
+	}
+	for orig, aliases := range namesAliases {
+		for _, alias := range aliases {
+			s = strings.ReplaceAll(s, alias, orig)
+		}
+	}
 	// now cyrillic to latin transliteration
 	for cyrillic, latin := range translitMap {
 		s = strings.ReplaceAll(s, cyrillic, latin)
